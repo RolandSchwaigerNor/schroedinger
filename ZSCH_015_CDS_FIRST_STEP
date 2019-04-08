@@ -1,0 +1,17 @@
+*&---------------------------------------------------------------------*
+*& Report zsch_017_cds_wahnsinn
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_015_cds_first_step.
+
+START-OF-SELECTION.
+
+  SELECT FROM zsch_05_country
+         FIELDS *
+         ORDER BY land1
+         INTO TABLE @DATA(gt_result_cds).
+
+  LOOP AT gt_result_cds ASSIGNING FIELD-SYMBOL(<ls_result_cds>).
+    WRITE: / <ls_result_cds>-land1.
+  ENDLOOP.

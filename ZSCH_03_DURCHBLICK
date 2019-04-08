@@ -1,0 +1,88 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_03_DURCHBLICK
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_03_durchblick.
+* TABLES-Struktur für Dynpro-Daten
+TABLES: zsch03project.
+* Parameter für das Projekt
+PARAMETERS: pa_proj TYPE zsch03project-projekt OBLIGATORY.
+* Die Variable zum Befüllen
+* Variante 1
+* DATA: gs_project TYPE zsch03project.
+
+* Controls
+DATA: go_container TYPE REF TO cl_gui_custom_container.
+* Variante 1
+* go_picture TYPE REF TO cl_gui_picture.
+
+
+START-OF-SELECTION.
+* Das mächtige WRITE zaubert eine Zeile in die Liste
+  WRITE: / 'Durchblick 3.0'.
+* Variante 1 Einzelsatz lesen
+*  SELECT SINGLE * FROM zsch03project INTO gs_project
+* Variante 2
+  SELECT SINGLE * FROM zsch03project INTO @DATA(gs_project)
+  WHERE projekt = @pa_proj.
+* Jetzt auch mit logischer Kontrolle
+  IF sy-subrc = 0.
+* und in der Liste ausgeben
+    WRITE: / gs_project.
+  ELSE.
+* Variante 1: der arme Anwender
+*    WRITE: / 'Och schade, nichts gefunden für Projekt = ', pa_proj.
+* Variante 2: der arme Anwender
+    WRITE: / | Och schade, nichts gefunden für Projekt = { pa_proj }|.
+  ENDIF.
+
+* Hier springt die Laufzeitumgebung rein
+AT LINE-SELECTION.
+* Daten in die TABLES-Struktur
+  zsch03project = gs_project.
+* Dynpro aufrufen
+  CALL SCREEN 9100.
+*&---------------------------------------------------------------------*
+*&      Module  CREATE_CONTROLS  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE create_controls OUTPUT.
+* Control instanziieren
+  IF go_container IS NOT BOUND.
+* Container
+    CREATE OBJECT go_container
+      EXPORTING
+        container_name = 'BILD'.
+* Bild
+* Variante 1
+*    CREATE OBJECT go_picture
+*      EXPORTING
+*        parent = go_container.
+* Variante 2
+    DATA(go_picture) = NEW cl_gui_picture( go_container ).
+
+* Bild laden
+    CALL METHOD go_picture->load_picture_from_url
+      EXPORTING
+        url = gs_project-bild.
+  ENDIF.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_9100  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_9100 OUTPUT.
+*  SET PF-STATUS 'xxxxxxxx'.
+*  SET TITLEBAR 'xxx'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_9100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_9100 INPUT.
+
+ENDMODULE.

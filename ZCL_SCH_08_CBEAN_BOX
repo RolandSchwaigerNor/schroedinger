@@ -1,0 +1,54 @@
+class ZCL_SCH_08_CBEAN_BOX definition
+  public
+  final
+  create public .
+
+public section.
+
+  constants GC_MAX_VOLUME type I value 700000 ##NO_TEXT.
+
+  events LOADED .
+
+  methods SET_VOLUME
+    importing
+      !ID_VOLUME type I .
+  methods ADD_BEAN_TO_BOX
+    importing
+      !IR_CBEAN type ref to ZCL_SCH_08_CBEAN .
+protected section.
+private section.
+
+  data GD_VOLUME type I .
+ENDCLASS.
+
+
+
+CLASS ZCL_SCH_08_CBEAN_BOX IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_08_CBEAN_BOX->ADD_BEAN_TO_BOX
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] IR_CBEAN                       TYPE REF TO ZCL_SCH_08_CBEAN
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD add_bean_to_box.
+* Neues Füllvolumen des Bohnenbehälters berechnen
+    me->gd_volume = me->gd_volume + ir_cbean->get_volume( ).
+* Prüfen, ob er voll ist (maximale Überfüllung mit einer Bohne)
+    IF gd_volume > me->gc_max_volume.
+* Schreien
+      RAISE EVENT loaded.
+    ENDIF.
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_08_CBEAN_BOX->SET_VOLUME
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] ID_VOLUME                      TYPE        I
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD SET_VOLUME.
+* Den Wert aus der Meth-Schnittstelle in das Attribut übernehmen
+    me->gd_volume = id_volume.
+  ENDMETHOD.
+ENDCLASS.

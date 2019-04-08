@@ -1,0 +1,28 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_019_RUNTER_DAMIT_AUF_AS
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_019_runter_damit_auf_as.
+
+DATA: gd_file   TYPE authb-filename VALUE `test.dat`,
+      gd_result TYPE string.
+DATA: gt_customers TYPE TABLE OF zsch016customer,
+      gs_customer  LIKE LINE OF gt_customers.
+
+START-OF-SELECTION.
+* Daten zu den Kunden lesen, ganz ungekapselt
+  SELECT * FROM zsch016customer INTO TABLE gt_customers.
+* Schreiben
+  OPEN DATASET gd_file FOR OUTPUT IN TEXT MODE
+  ENCODING DEFAULT
+  WITH SMART LINEFEED.
+
+  LOOP AT gt_customers INTO gs_customer.
+    TRANSFER gs_customer TO gd_file.
+  ENDLOOP.
+  CLOSE DATASET gd_file.
+
+  DATA: gt_recipe TYPE TABLE OF zsch06recipe.
+  READ TABLE gt_recipe ASSIGNING FIELD-SYMBOL(<gs_recipe>)
+    WITH KEY rid = '002'.

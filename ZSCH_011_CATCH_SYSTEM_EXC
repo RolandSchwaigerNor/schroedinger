@@ -1,0 +1,38 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_11_AUSNAHME
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_011_catch_system_exc.
+
+* Resultat und Anzahl
+DATA: gd_result TYPE i,
+      gd_number TYPE i.
+
+CATCH SYSTEM-EXCEPTIONS arithmetic_errors = 4
+OTHERS = 8."*1
+  gd_result = 1 / gd_number."*2
+ENDCATCH.
+IF sy-subrc <> 0."*3
+  WRITE: / 'Erwischt!'.
+ENDIF.
+
+CATCH SYSTEM-EXCEPTIONS OTHERS = 1."*1
+  PERFORM div_0.
+ENDCATCH.
+IF sy-subrc = 1."*3
+  WRITE: / 'Eine Ebene tiefer wird leider nicht erwischt'.
+ENDIF.
+
+
+*&---------------------------------------------------------------------*
+*&      Form  DIV_BY_ZERO
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM div_0 .
+  DATA(gd_result) = 1 / 0.
+ENDFORM.

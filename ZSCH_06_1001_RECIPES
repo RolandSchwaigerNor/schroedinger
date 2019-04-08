@@ -1,0 +1,134 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_06_1001_RECIPES
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_06_1001_recipes.
+* Die Daten von der Datenbanktabelle werden in der
+* Struktur gepuffert
+DATA: gs_recipe TYPE zsch06recipe.
+
+START-OF-SELECTION.
+* Einstweilen mal nur Rezept Nummer 1
+  SELECT SINGLE * FROM zsch06recipe INTO gs_recipe
+  WHERE rid = '002'.
+* Falls ein Satz gefunden, dann Ausgabe.
+  IF sy-subrc = 0.
+* Kopfzeile
+    WRITE: / 'Menüart: ', gs_recipe-menueart.
+    WRITE: / 'Kochdauer: ', gs_recipe-kochdauer, ' Minuten'.
+    WRITE: / 'Region: ', gs_recipe-region.
+    WRITE: / 'Schwierigkeit: ', gs_recipe-schwierigkeit,
+    '(0 ist einfach)'.
+    SKIP 2."*1
+* Schön zerteilen
+    DATA: gt_zutaten TYPE stringtab, "*2
+          gs_zutaten LIKE LINE OF gt_zutaten.
+* Zerhacken
+    SPLIT gs_recipe-zutaten AT '##' INTO TABLE gt_zutaten.
+* und ausgeben
+    LOOP AT gt_zutaten INTO gs_zutaten.
+      WRITE: / gs_zutaten.
+    ENDLOOP.
+    SKIP 2.
+* Schön zerteilen
+    DATA: gt_zubereitung TYPE stringtab,
+          gs_zubereitung LIKE LINE OF gt_zubereitung,
+          gd_mod         TYPE i,
+          gd_len         TYPE i,
+          gd_index       TYPE i.
+* Zerhacken
+    SPLIT gs_recipe-zubereitung AT '##'
+    INTO TABLE gt_zubereitung.
+* und ausgeben
+    LOOP AT gt_zubereitung INTO gs_zubereitung.
+      IF sy-tabix = 1."*3
+        WRITE: / gs_zubereitung.
+        NEW-LINE.
+        CONTINUE."*4
+      ELSE.
+        NEW-LINE.
+      ENDIF.
+      gd_len = strlen( gs_zubereitung ).
+      DO gd_len TIMES."*5
+        gd_index = sy-index - 1.
+        WRITE: gs_zubereitung+gd_index(1) NO-GAP.
+        gd_mod = sy-index MOD 100."*6
+        IF gd_mod = 0.
+          NEW-LINE.
+        ENDIF.
+      ENDDO.
+    ENDLOOP.
+************************************************************
+    ULINE.
+  ELSE.
+    WRITE: / 'Leider kein Rezept 002 gefunden!'.
+  ENDIF.
+
+** Die Daten von der Datenbanktabelle werden in der
+** Struktur gepuffert
+*START-OF-SELECTION.
+** Einstweilen mal nur Rezept Nummer 1
+*  SELECT SINGLE * FROM zsch06recipe INTO @DATA(gs_recipe)"*1
+*    WHERE rid = '001'."*2
+** Längenermittlung
+*  DATA(gd_len_zutaten) = strlen( gs_recipe-zutaten ). "*2
+** mit Ausgabe
+*  WRITE: / |Die Zutatenliste hat { gd_len_zutaten } Zeichen |. "*3
+*
+*
+** Text zusammenhängen
+*  DATA: gd_len_ausgabe     TYPE string,
+*        gd_len_zutaten_str TYPE string.
+** Konvertieren der Werte
+*  gd_len_zutaten_str = gd_len_zutaten."*1
+** Verknüpfen der Zeichenketten
+*  CONCATENATE
+*  'Die Zutatenliste hat' gd_len_zutaten_str
+*  'Zeichen'
+*  INTO gd_len_ausgabe SEPARATED BY space."*2
+** Ausgabe einzeln
+*  WRITE: / 'Die Zutatenliste hat',
+*   gd_len_zutaten,
+*  'Zeichen'.
+** und Ausgabe
+*  WRITE: / gd_len_ausgabe.
+*
+** Suche nach Eiern
+*  FIND FIRST OCCURRENCE OF 'Ei'
+*  IN gs_recipe-zutaten
+*  IGNORING CASE.
+*  IF sy-subrc = 0.
+*    WRITE: / 'Da ist ein Ei dabei'.
+*  ENDIF.
+*
+** Schön zerteilen
+*  DATA: gt_zutaten TYPE stringtab,
+*        gs_zutaten LIKE LINE OF gt_zutaten. "*1
+** Zerhacken
+*  SPLIT gs_recipe-zutaten AT '##' INTO TABLE gt_zutaten."*2
+** und ausgeben
+*  LOOP AT gt_zutaten INTO gs_zutaten."*3
+*    WRITE: / gs_zutaten.
+*  ENDLOOP.
+*
+*** Falls einen Satz gefunden, dann Ausgabe.
+**  WRITE: / 'Nicht so schöne Ausgabe:'.
+*** Feldweise Ausgabe "*3
+**  WRITE: / gs_recipe-rid,
+**  gs_recipe-zutaten,
+**  gs_recipe-zubereitung,
+**  gs_recipe-menueart,
+**  gs_recipe-kochdauer,
+**  gs_recipe-region,
+**  gs_recipe-schwierigkeit.
+*
+*
+*
+**  DATA(gd_aber_bitte_mit_sahne) = abap_true.
+**  DATA(gd_po_id) = CONV i('2147483647').
+**  DATA(gd_po_id) = CONV i('2147483648').
+** START-OF-SELECTION.
+**  SELECT SINGLE * FROM zsch06recipe INTO @DATA(ls_recipe)
+**  WHERE rid = '001'.
+**  WRITE: / | Nicht so schöne Ausgabe: { ls_recipe } |.

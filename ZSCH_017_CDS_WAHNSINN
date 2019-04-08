@@ -1,0 +1,35 @@
+*&---------------------------------------------------------------------*
+*& Report zsch_017_cds_wahnsinn
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_017_cds_wahnsinn.
+
+PARAMETERS: pa_cid TYPE zsch_016_td_customerid.
+
+START-OF-SELECTION.
+
+  SELECT FROM zsch_17_cds_j_ca
+         FIELDS *
+         WHERE customid = @pa_cid
+         ORDER BY customid
+         INTO TABLE @DATA(gt_result_cds_j_ca).
+  LOOP AT gt_result_cds_j_ca ASSIGNING FIELD-SYMBOL(<ls_result_cds_j_ca>).
+    WRITE: / <ls_result_cds_j_ca>-customid,
+             <ls_result_cds_j_ca>-addressid.
+  ENDLOOP.
+  ULINE.
+  SELECT FROM zsch017cdsca AS cust "ZSCH_17_CDS_CA AS cust
+         FIELDS
+         customid,
+          \_addr-plz AS plz,
+          \_addr-ort AS ort,
+          \_addr-strasse AS strasse
+         WHERE cust~customid = @pa_cid
+         ORDER BY nachname, vorname
+         INTO TABLE @DATA(gt_result_cds_ca).
+
+  LOOP AT gt_result_cds_ca ASSIGNING FIELD-SYMBOL(<ls_result_cds_ca>).
+    WRITE: / <ls_result_cds_ca>-customid,
+             <ls_result_cds_ca>-plz.
+  ENDLOOP.

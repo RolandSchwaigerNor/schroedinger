@@ -1,0 +1,40 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_12_SEL_SCREEN
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_12_sel_screen.
+
+
+*PARAMETERS: pa_msgid LIKE sy-msgid OBLIGATORY,
+*            pa_langu TYPE c  AS CHECKBOX,
+*            pa_msg   TYPE c AS CHECKBOX,
+*            pa_mes1  TYPE c RADIOBUTTON GROUP gr,
+*            pa_mes2  TYPE c RADIOBUTTON GROUP gr,
+*            pa_mes3  TYPE c RADIOBUTTON GROUP gr.
+*
+*[TYPE <type>] [DECIMALS <n>] [LIKE <var>]
+*[MEMORY ID <mid1>] *1
+*[OBLIGATORY] *2
+*[DEFAULT <value>] *3
+*[VALUE CHECK] *4
+*[AS CHECKBOX] *5
+*[RADIOBUTTON GROUP <grp>] *6
+
+*SELECT-OPTIONS:
+*so_msg1 FOR sy-msgid OBLIGATORY,
+*so_msg2 FOR sy-msgid,
+*so_msg3 FOR sy-msgid,
+*so_msg4 FOR sy-msgid.
+
+DATA: ld_int TYPE i.
+
+SELECT-OPTIONS: so_int FOR ld_int.
+
+START-OF-SELECTION.
+  LOOP AT so_int.
+    WRITE: / so_int-sign,
+    so_int-option,
+    so_int-low,
+    so_int-high.
+  ENDLOOP.

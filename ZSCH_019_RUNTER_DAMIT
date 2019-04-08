@@ -1,0 +1,219 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_019_RUNTER_DAMIT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_019_runter_damit.
+
+TYPE-POOLS: abap, icon.
+* OK-Code
+TABLES sscrfields.
+* Die Kunden
+TYPES: gtt_customers TYPE TABLE OF zsch016customer.
+* Verzeichnis und Dateiname
+PARAMETERS: pa_dir  TYPE string,
+            pa_file TYPE string.
+* Die Drucktasten
+SELECTION-SCREEN SKIP 2.
+SELECTION-SCREEN PUSHBUTTON 2(10) down "
+USER-COMMAND down.
+SELECTION-SCREEN PUSHBUTTON 12(25) spdsh
+USER-COMMAND spdsh.
+SELECTION-SCREEN PUSHBUTTON 37(10) up
+USER-COMMAND up.
+* Die Kundendaten
+DATA: gt_customers TYPE gtt_customers.
+* Vorschlagswert für das Verzeichnis
+DATA: gd_temp_dir TYPE string.
+* Kombi aus Pfad und Datei
+DATA: gd_file_path TYPE string.
+
+INITIALIZATION.
+* Directory ermitteln, in das geschrieben wird
+  PERFORM get_temp_dir
+  CHANGING
+  gd_temp_dir.
+* Text für den Button
+  down = 'Download'(b01).
+  up = 'Upload'(b02).
+* Icon auf Button ergänzen
+  CALL FUNCTION 'ICON_CREATE'
+    EXPORTING
+      name       = icon_xls
+      text       = 'Start TabCalc'
+      info       = 'Start!'
+      add_stdinf = space
+    IMPORTING
+      result     = spdsh
+    EXCEPTIONS
+      OTHERS     = 0.
+* Directory ermitteln, in das geschrieben wird*7
+* Parameter vorbelegen
+* Parameterwerte vorschlagen
+  pa_dir = gd_temp_dir.
+* dateinamen vorschlagen
+  pa_file = 'TEST1.XLS'.
+
+
+
+AT SELECTION-SCREEN.
+* Pfad zusammenstellen
+  CONCATENATE
+  pa_dir
+  '\'
+  pa_file
+  INTO gd_file_path.
+* Drucktastenbehandlung
+  CASE sscrfields.
+    WHEN 'SPDSH'.
+* Tabellenkalkulation aufrufen
+    WHEN 'DOWN'.
+* Die Kundendaten ermitteln
+      PERFORM get_customer_data
+      CHANGING
+      gt_customers.
+* Daten ins Clipboard schreiben
+* Testen mit Strg + V im Notepad
+      PERFORM write_to_clipboard
+      USING
+      gt_customers.
+* Datei schreiben
+      PERFORM customers_download USING
+      gd_file_path
+      gt_customers.
+    WHEN 'UP'.
+* Datei holen
+      PERFORM customers_upload USING
+      gd_file_path
+      CHANGING
+      gt_customers.
+  ENDCASE.
+
+FORM get_temp_dir CHANGING cd_temp_dir TYPE string.
+  CALL METHOD cl_gui_frontend_services=>get_temp_directory
+    CHANGING
+      temp_dir     = cd_temp_dir
+    EXCEPTIONS
+      cntl_error   = 1
+      error_no_gui = 2.
+  IF sy-subrc <> 0.
+* Fehlerbehandlung
+    cd_temp_dir = 'Desktop'.
+  ENDIF.
+* Flush der Methoden
+  CALL METHOD cl_gui_cfw=>flush
+    EXCEPTIONS
+      cntl_system_error = 1
+      cntl_error        = 2
+      OTHERS            = 3.
+  IF sy-subrc <> 0.
+* Fehlerbehandlung
+  ENDIF.
+ENDFORM.
+
+FORM get_customer_data CHANGING
+ct_customers TYPE gtt_customers.
+  SELECT * FROM zsch016customer INTO TABLE ct_customers.
+ENDFORM.
+
+FORM write_to_clipboard USING
+VALUE(it_customers) TYPE gtt_customers.
+  DATA: ld_rc TYPE i.
+  CALL METHOD cl_gui_frontend_services=>clipboard_export
+    IMPORTING
+      data                 = it_customers
+    CHANGING
+      rc                   = ld_rc
+    EXCEPTIONS
+      cntl_error           = 1
+      error_no_gui         = 2
+      not_supported_by_gui = 3
+      OTHERS               = 4.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+ENDFORM.
+
+FORM customers_download USING id_file_path TYPE string
+it_customers TYPE gtt_customers.
+  CALL METHOD cl_gui_frontend_services=>gui_download
+    EXPORTING
+      filename                = id_file_path
+      filetype                = 'DAT'
+      write_field_separator   = abap_true
+      dat_mode                = abap_true
+      confirm_overwrite       = abap_true
+*     show_transfer_status    = 'X'
+    CHANGING
+      data_tab                = it_customers
+    EXCEPTIONS
+      file_write_error        = 1
+      no_batch                = 2
+      gui_refuse_filetransfer = 3
+      invalid_type            = 4
+      no_authority            = 5
+      unknown_error           = 6
+      header_not_allowed      = 7
+      separator_not_allowed   = 8
+      filesize_not_allowed    = 9
+      header_too_long         = 10
+      dp_error_create         = 11
+      dp_error_send           = 12
+      dp_error_write          = 13
+      unknown_dp_error        = 14
+      access_denied           = 15
+      dp_out_of_memory        = 16
+      disk_full               = 17
+      dp_timeout              = 18
+      file_not_found          = 19
+      dataprovider_exception  = 20
+      control_flush_error     = 21
+      not_supported_by_gui    = 22
+      error_no_gui            = 23
+      OTHERS                  = 24.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ELSE.
+    MESSAGE 'Alle Kunden sind unten'(m01) TYPE 'I'.
+  ENDIF.
+ENDFORM.
+
+FORM customers_upload USING VALUE(id_file_path) TYPE string
+CHANGING ct_customers TYPE gtt_customers.
+  CALL METHOD cl_gui_frontend_services=>gui_upload
+    EXPORTING
+      filename                = id_file_path
+      filetype                = 'DAT'
+      has_field_separator     = abap_true
+      dat_mode                = abap_true
+    CHANGING
+      data_tab                = ct_customers
+    EXCEPTIONS
+      file_open_error         = 1
+      file_read_error         = 2
+      no_batch                = 3
+      gui_refuse_filetransfer = 4
+      invalid_type            = 5
+      no_authority            = 6
+      unknown_error           = 7
+      bad_data_format         = 8
+      header_not_allowed      = 9
+      separator_not_allowed   = 10
+      header_too_long         = 11
+      unknown_dp_error        = 12
+      access_denied           = 13
+      dp_out_of_memory        = 14
+      disk_full               = 15
+      dp_timeout              = 16
+      not_supported_by_gui    = 17
+      error_no_gui            = 18
+      OTHERS                  = 19.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ELSE.
+    MESSAGE 'Alle Kunden sind oben' TYPE 'I'.
+  ENDIF.
+ENDFORM.

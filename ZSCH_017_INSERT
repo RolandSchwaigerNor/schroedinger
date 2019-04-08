@@ -1,0 +1,12 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_017_INSERT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_017_insert.
+
+START-OF-SELECTION.
+
+  SELECT * FROM zsch016customer INTO TABLE @DATA(lt_address).
+
+  INSERT zsch016customer FROM  TABLE lt_address.

@@ -1,0 +1,65 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_09_BIER
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_09_bier.
+
+CLASS lcl_bier DEFINITION.
+  PUBLIC SECTION.
+    TYPES: gdt_alkoholgehalt TYPE p LENGTH 3 DECIMALS 2."*1
+    METHODS: set_alkoholgehalt
+      IMPORTING id_aloholgehalt TYPE gdt_alkoholgehalt,"*2
+      brauen."*1
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA: gd_alkoholgehalt TYPE gdt_alkoholgehalt
+    VALUE '4.50'."*3
+ENDCLASS.
+CLASS lcl_bier IMPLEMENTATION.
+  METHOD set_alkoholgehalt."*4
+    me->gd_alkoholgehalt = id_aloholgehalt."*5
+  ENDMETHOD.
+  METHOD brauen.
+    WRITE: /'Brauen'."*3
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_bier_untergaerig DEFINITION INHERITING FROM lcl_bier.
+  PUBLIC SECTION.
+    METHODS: brauen REDEFINITION."*1
+    METHODS: set_alkoholgehalt REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS lcl_bier_untergaerig IMPLEMENTATION.
+  METHOD brauen.
+    CALL METHOD super->brauen."*2
+    WRITE: /'Sogar untergärig'."*3
+  ENDMETHOD.
+  METHOD set_alkoholgehalt.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_bier_obergaerig DEFINITION INHERITING FROM lcl_bier.
+  PUBLIC SECTION.
+    METHODS: brauen REDEFINITION."*1
+    METHODS: set_alkoholgehalt REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS lcl_bier_obergaerig IMPLEMENTATION.
+  METHOD brauen.
+    CALL METHOD super->brauen."*2
+    WRITE: /'Sogar obergärig'."*3
+  ENDMETHOD.
+  METHOD set_alkoholgehalt.
+  ENDMETHOD.
+ENDCLASS.
+DATA: gr_obergaerig TYPE REF TO lcl_bier_obergaerig,
+      gr_unterbier  TYPE REF TO lcl_bier_untergaerig,
+      gr_bier       TYPE REF TO lcl_bier.
+
+START-OF-SELECTION.
+  gr_bier = NEW lcl_bier_untergaerig( ).
+  gr_obergaerig ?= gr_bier.

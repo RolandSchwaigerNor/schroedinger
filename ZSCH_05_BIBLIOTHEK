@@ -1,0 +1,32 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_05_BIBLIOTHEK
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_05_bibliothek.
+
+DATA: gt_biblio TYPE zsch_05_tt_biblio,
+      gs_biblio LIKE LINE OF gt_biblio.
+
+START-OF-SELECTION.
+* Zuerst die Arbeitsstruktur befüllen
+  gs_biblio-buch_titel = 'Schrödinger programmiert ABAP'.
+  gs_biblio-anz_seiten = 742.
+* Anhängen geht auch bei STANDARD-Tabelle
+* APPEND gs_biblio TO gt_biblio.
+  INSERT gs_biblio INTO TABLE gt_biblio.
+* noch eins
+  gs_biblio-buch_titel = 'Einstieg in Web Dynpro ABAP '.
+  gs_biblio-anz_seiten = 480.
+  INSERT gs_biblio INTO TABLE gt_biblio.
+* und ein Letztes noch
+  gs_biblio-buch_titel = 'ROSA-TOM: Agile Prozesserfassung'.
+  gs_biblio-anz_seiten = 50.
+  INSERT gs_biblio INTO TABLE gt_biblio.
+* Sortieren
+  SORT gt_biblio BY buch_titel ASCENDING.
+* Bibliothek ausgeben
+  LOOP AT gt_biblio INTO gs_biblio.
+    WRITE: / gs_biblio-buch_titel,
+    gs_biblio-anz_seiten.
+  ENDLOOP.

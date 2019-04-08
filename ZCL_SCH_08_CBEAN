@@ -1,0 +1,44 @@
+class ZCL_SCH_08_CBEAN definition
+  public
+  final
+  create public .
+
+public section.
+
+  methods SET_VOLUME
+    importing
+      !ID_VOLUME type I .
+  methods GET_VOLUME
+    returning
+      value(RD_VOLUME) type I .
+protected section.
+private section.
+
+  data GD_VOLUME type I value 350 ##NO_TEXT.
+ENDCLASS.
+
+
+
+CLASS ZCL_SCH_08_CBEAN IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_08_CBEAN->GET_VOLUME
+* +-------------------------------------------------------------------------------------------------+
+* | [<-()] RD_VOLUME                      TYPE        I
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_volume.
+    rd_volume = me->gd_volume.
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_08_CBEAN->SET_VOLUME
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] ID_VOLUME                      TYPE        I
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD set_volume.
+* Den Wert aus der Meth-Schnittstelle in das Attribut übernehmen
+    me->gd_volume = id_volume.
+  ENDMETHOD.
+ENDCLASS.

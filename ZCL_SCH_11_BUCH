@@ -1,0 +1,27 @@
+class ZCL_SCH_11_BUCH definition
+  public
+  final
+  create public .
+
+public section.
+
+  class-methods CHECK_IN_TIME
+    raising
+      ZCX_SCH_011_TERMINTREUE .
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZCL_SCH_11_BUCH IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method ZCL_SCH_11_BUCH=>CHECK_IN_TIME
+* +-------------------------------------------------------------------------------------------------+
+* | [!CX!] ZCX_SCH_011_TERMINTREUE
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  method CHECK_IN_TIME.
+  endmethod.
+ENDCLASS.

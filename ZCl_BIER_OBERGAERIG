@@ -1,0 +1,54 @@
+class ZCL_BIER_OBERGAERIG definition
+  public
+  inheriting from ZCL_BIER
+  create public .
+
+public section.
+
+  methods BRAUEN
+    redefinition .
+  methods SET_ALKOHOLGEHALT
+    redefinition .
+  methods WRITE_STAMMWUERZE
+    redefinition .
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZCL_BIER_OBERGAERIG IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_BIER_OBERGAERIG->BRAUEN
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  method BRAUEN.
+
+    CALL METHOD super->brauen."*2
+    WRITE: /'Sogar obergärig'."*3
+
+  endmethod.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_BIER_OBERGAERIG->SET_ALKOHOLGEHALT
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] ID_ALOHOLGEHALT                TYPE        GDT_ALKOHOLGEHALT
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  method SET_ALKOHOLGEHALT.
+
+
+  endmethod.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_BIER_OBERGAERIG->WRITE_STAMMWUERZE
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD write_stammwuerze.
+    WRITE: / 'Obergärige Stammwürze: '.
+    super->write_stammwuerze( ).
+  ENDMETHOD.
+ENDCLASS.

@@ -1,0 +1,12 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_03_TEXT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_03_text.
+DATA: gd_anz_semmerl TYPE i value 3,
+      gd_anz_kipferl TYPE i value 5.
+
+START-OF-SELECTION.
+  DATA(gd_anz_gebaeck) = gd_anz_semmerl + gd_anz_kipferl.
+  WRITE: gd_anz_gebaeck.

@@ -1,0 +1,69 @@
+class ZCL_SCH_10_KATZE definition
+  public
+  final
+  create public .
+
+public section.
+
+  interfaces ZIF_SCH_10_SEARCH .
+
+  methods AUSNAHME .
+protected section.
+private section.
+
+  methods DIV_BY_ZERO .
+ENDCLASS.
+
+
+
+CLASS ZCL_SCH_10_KATZE IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_10_KATZE->AUSNAHME
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD ausnahme.
+
+    DATA: gd_result TYPE i,
+          gd_number TYPE i.
+    CATCH SYSTEM-EXCEPTIONS arithmetic_errors = 4
+    OTHERS = 8."*1
+      gd_result = 1 / gd_number."*2
+    ENDCATCH.
+    IF sy-subrc <> 0."*3
+      WRITE: / 'Erwischt!'.
+    ENDIF.
+
+    CATCH SYSTEM-EXCEPTIONS OTHERS = 1."*1
+      me->div_by_zero( ).
+    ENDCATCH.
+    IF sy-subrc = 1."*3
+      WRITE: / 'Eine Ebene tiefer wird leider nicht erwischt'.
+    ENDIF.
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Private Method ZCL_SCH_10_KATZE->DIV_BY_ZERO
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD div_by_zero.
+    DATA(ld_result) = 1 / 0.
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZCL_SCH_10_KATZE->ZIF_SCH_10_SEARCH~GET_IT
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] ID_THING                       TYPE        STRING
+* | [<---] ET_THINGS                      TYPE        STRINGTAB
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD zif_sch_10_search~get_it.
+
+    IF id_thing = 'Stockerl'.
+      APPEND 'Sicher nicht!' TO et_things.
+    ENDIF.
+
+  ENDMETHOD.
+ENDCLASS.

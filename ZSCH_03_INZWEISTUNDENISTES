@@ -1,0 +1,15 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_03_INZWEISTUNDENISTES
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_03_inzweistundenistes.
+* Party on
+START-OF-SELECTION.
+* Jetzt
+  WRITE: | Jetzt ist es: { sy-uzeit TIME = USER }|.
+* In zwei Stunden ist es ...
+* Zeitarithmetik
+  DATA(gd_inzweistunden) = CONV t( sy-uzeit + 2 ).
+* und in zwei Stunden
+  WRITE: / | Und in zwei Stunden ist es: { gd_inzweistunden TIME = USER }|.

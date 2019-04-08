@@ -1,0 +1,38 @@
+*&---------------------------------------------------------------------*
+*& Report ZSCH_08_C_MACHINE
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsch_08_c_machine.
+
+******************************************************
+CLASS lcl_wasserbehaelter DEFINITION DEFERRED.
+
+CLASS lcl_kaffeevollautomat DEFINITION."*1
+* Hier kommen die Definitionen rein
+  PUBLIC SECTION.
+    DATA: lo_wd TYPE REF TO lcl_wasserbehaelter.
+ENDCLASS."*2
+CLASS lcl_kaffeevollautomat IMPLEMENTATION."*3
+* Hier kommen die Implementierungen rein
+ENDCLASS."*4
+******************************************************
+* Definitionsteil des Wasserbehälters
+CLASS lcl_wasserbehaelter DEFINITION.
+* Hier kommen die Definitionen rein
+ENDCLASS.
+* Implementationsteil des Wasserbehälters
+CLASS lcl_wasserbehaelter IMPLEMENTATION.
+* Hier kommen die Implementierungen rein
+ENDCLASS.
+**********************************************************************
+***********************************************************
+* Kaffee Zubereitungsart
+DATA gd_zubereitungsart TYPE char40.
+* Ref auf Kaffeevollautomat
+DATA gr_rolands_kva TYPE REF TO lcl_kaffeevollautomat."*1
+DATA gr_mein_kva TYPE REF TO lcl_kaffeevollautomat."*1
+
+START-OF-SELECTION.
+
+  DATA(go_kva) = NEW lcl_kaffeevollautomat( ).

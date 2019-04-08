@@ -1,0 +1,23 @@
+FUNCTION z_sch07recipe_get_detail.
+*"----------------------------------------------------------------------
+*"*"Lokale Schnittstelle:
+*"  IMPORTING
+*"     VALUE(ID_RID) TYPE  ZSCH06RECIPE-RID DEFAULT '0002'
+*"  EXPORTING
+*"     REFERENCE(ES_RECIPE) TYPE  ZSCH06RECIPE
+*"----------------------------------------------------------------------
+
+  SELECT SINGLE
+    mandt,
+    rid,
+    zutaten,
+    zubereitung,
+    menueart,
+    kochdauer,
+    region,
+    schwierigkeit
+    FROM zsch06recipe
+    INTO @es_recipe
+    WHERE rid = @id_rid.
+
+ENDFUNCTION.
